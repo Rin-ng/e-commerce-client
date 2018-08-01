@@ -19,6 +19,10 @@
             <li class="nav-item" :class="{active: isActiveBlonde}">
             <a class="nav-link" @click="blondeRoast()">Blonde Roast</a>
             </li>
+            <li class="nav-item" v-if="isActiveSearch === true" :class="{active: isActiveSearch}">
+              <a class="nav-link"> Search Result</a>
+              
+            </li>
            
          </ul>
          <form class="form-inline my-2 my-lg-0">
@@ -58,11 +62,12 @@ export default{
         isActiveDark: false,
         isActiveMedium: false,
         isActiveBlonde: false,
+        isActiveSearch: false,
       }
    },
    methods:{
       ...mapActions([
-         'getCart', 'searchCategory', 'getInventory'
+         'getCart', 'searchCategory', 'getInventory', 'searchItem'
       ]),
       logOut(){
         localStorage.clear();
@@ -78,6 +83,7 @@ export default{
         this.isActiveDark= true;
         this.isActiveMedium= false;
         this.isActiveBlonde= false;
+        this.isActiveSearch = false;
       },
       mediumRoast(){
         this.searchCategory('Medium Roast')
@@ -85,6 +91,7 @@ export default{
         this.isActiveDark= false;
         this.isActiveMedium= true;
         this.isActiveBlonde= false;
+        this.isActiveSearch = false;
       },
       blondeRoast(){
         this.searchCategory('Blonde Roast')
@@ -92,9 +99,16 @@ export default{
         this.isActiveDark= false;
         this.isActiveMedium= false;
         this.isActiveBlonde= true;
+        this.isActiveSearch = false;
       },
       search(){
-
+        this.searchItem(this.searchQuery);
+        this.searchQuery = ''
+        this.isActiveAll= false;
+        this.isActiveDark= false;
+        this.isActiveMedium= false;
+        this.isActiveBlonde= false;
+        this.isActiveSearch = true;
       },
       home(){
         this.getInventory();
@@ -103,6 +117,7 @@ export default{
         this.isActiveDark= false;
         this.isActiveMedium= false;
         this.isActiveBlonde= false;
+        this.isActiveSearch = false;
       }
    },
    created(){

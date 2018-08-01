@@ -10,7 +10,8 @@ export default new Vuex.Store({
   state: {
     inventoryArr: '',
     shoppingCart: '',
-    adminInventory: ''
+    adminInventory: '',
+    searchResult: ''
   },
   mutations: {
     inventoryArr(state, payload){
@@ -21,12 +22,15 @@ export default new Vuex.Store({
     },
     adminInventory(state, payload){
       state.adminInventory = payload;
+    },
+    searchResult(state, payload){
+      state.searchResult = payload;
     }
   },
   actions: {
     signIn({commit}, userData){
       
-      axios.post('http://localhost:3000/users/signIn', {
+      axios.post('https://e-commerce-server.rin-ng.me/users/signIn', {
         email: userData.email,
         password: userData.password
       })
@@ -53,7 +57,7 @@ export default new Vuex.Store({
     addInventory({commit,dispatch}, formData){
       let token = localStorage.getItem('token');
       let self = this;
-      axios.post("http://localhost:3000/inventory/addItem", formData, 
+      axios.post("https://e-commerce-server.rin-ng.me/inventory/addItem", formData, 
       {
         headers: {
           token: token,
@@ -82,7 +86,7 @@ export default new Vuex.Store({
       .then((willConfirm) => {
         if (willConfirm) {
           
-          axios.delete('http://localhost:3000/inventory/deleteItem',{
+          axios.delete('https://e-commerce-server.rin-ng.me/inventory/deleteItem',{
             headers:{
               token: localStorage.getItem('token'),
               id: id
@@ -105,7 +109,7 @@ export default new Vuex.Store({
       });
     },
     getInventory({commit}){
-      axios.get('http://localhost:3000/inventory/')
+      axios.get('https://e-commerce-server.rin-ng.me/inventory/')
       .then(function({data}){
         commit('inventoryArr', data)
       })
@@ -114,7 +118,7 @@ export default new Vuex.Store({
       })
     },
     getAdminInventory({commit}){
-      axios.get('http://localhost:3000/inventory/')
+      axios.get('https://e-commerce-server.rin-ng.me/inventory/')
       .then(function({data}){
         commit('adminInventory', data)
       })
@@ -123,7 +127,7 @@ export default new Vuex.Store({
       })
     },
     searchCategory({commit}, type){
-      axios.post('http://localhost:3000/inventory/searchType', {
+      axios.post('https://e-commerce-server.rin-ng.me/inventory/searchType', {
         type: type
       })
       .then(function({data}){
@@ -137,7 +141,7 @@ export default new Vuex.Store({
     editInventory({commit, dispatch}, newItem){
       console.log("edit ", newItem);
       let self = this;
-      axios.put('http://localhost:3000/inventory/updateItem', newItem,{
+      axios.put('https://e-commerce-server.rin-ng.me/inventory/updateItem', newItem,{
         headers:{
           token: localStorage.getItem('token')
         }
@@ -150,9 +154,20 @@ export default new Vuex.Store({
         console.log(err)
       })
     },
+    searchItem({commit}, query){
+      console.log("dari search item: " , query)
+      axios.post('https://e-commerce-server.rin-ng.me/inventory/searchItem', {query: query})
+      .then(function({data}){
+        console.log("ini hasil search: ", data.tasks)
+        commit('inventoryArr', data.tasks)
+      })
+      .catch(function(err){
+        console.log(err)
+      })
+    },
     //SHOPPING CART
     getCart({commit}){
-      axios.get('http://localhost:3000/cart/')
+      axios.get('https://e-commerce-server.rin-ng.me/cart/')
       .then(function({data}){
         console.log("dari getcart: " ,data)
         commit('shoppingCart', data)
@@ -167,7 +182,7 @@ export default new Vuex.Store({
       item['qty'] = 1
       item['itemid'] = item._id;
       console.log("abis masukin qty & id field: ", item)
-      axios.post("http://localhost:3000/cart/addItem", item)
+      axios.post("https://e-commerce-server.rin-ng.me/cart/addItem", item)
       .then(function(response){
           console.log(response);
           self.dispatch('getCart')
@@ -178,7 +193,7 @@ export default new Vuex.Store({
     },
     updateCart({commit, dispatch}, newItem){
       let self = this;
-      axios.put("http://localhost:3000/cart/updateItem", {itemid: newItem._id, qty: newItem.qty})
+      axios.put("https://e-commerce-server.rin-ng.me/cart/updateItem", {itemid: newItem._id, qty: newItem.qty})
       .then(function(response){
         console.log(response)
         self.dispatch('getCart')
@@ -189,7 +204,7 @@ export default new Vuex.Store({
     },
     deleteItemCart({commit, dispatch}, item){
       let self = this;
-      axios.delete("http://localhost:3000/cart/deleteItem", {
+      axios.delete("https://e-commerce-server.rin-ng.me/cart/deleteItem", {
         headers:{
           id : item._id
         }
@@ -205,7 +220,7 @@ export default new Vuex.Store({
     findItem({commit, dispatch}, item){
       console.log(item);
       let self = this;
-      axios.post("http://localhost:3000/cart/findItem", {id: item._id})
+      axios.post("https://e-commerce-server.rin-ng.me/cart/findItem", {id: item._id})
       .then(function({data}){
         console.log("dari find item: " , data)
         if(data.message === "found"){
